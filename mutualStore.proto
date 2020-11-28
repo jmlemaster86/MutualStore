@@ -10,18 +10,18 @@ service SecureMessaging{
 }
 
 message StoreReq{
-    int key = 1;
+    int32 key = 1;
     bytes data = 2;
 }
 
 message RetrieveReq{
-    int key = 1;
-    String ip = 2;
+    int32 key = 1;
+    string ip = 2;
 }
 
 message JoinReq{
-    String ip = 1;
-    int numBlocks = 2;
+    string ip = 1;
+    int32 numBlocks = 2;
 }
 
 message BlockMsg{
@@ -29,6 +29,6 @@ message BlockMsg{
 }
 
 message Confirmation{
-    int status = 1;
+    int32 status = 1;
 }
 
