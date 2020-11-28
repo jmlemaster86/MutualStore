@@ -1,7 +1,10 @@
 import diskUtils as DISK
 import disHash as CHORD
+import socket
 import grpc
-import mutualStore_pb2_grbc as REMOTE
+import os
+import time
+import mutualStore_pb2_grpc as REMOTE
 import mutualStore_pb2 as MESSAGE
 from concurrent import futures
 
@@ -17,10 +20,11 @@ class Server(REMOTE.SecureMessagingServicer):
     def getBlock(self, request, context):
         return None
 
-    def joinNode(self, request, context):
+    def JoinNode(self, request, context):
         result = 0
         try:
             self.chord.update(request.ip, request.numBlocks)
+            self.chord.nodes[0].printFingers()
             result = 1
         except:
             print("Unable to update.")
@@ -28,7 +32,7 @@ class Server(REMOTE.SecureMessagingServicer):
 
 
 def initializeClientConnection(server_ip):
-    channel = grpc.insecure_channel(server_ip + '50050')
+    channel = grpc.insecure_channel(server_ip + ':50050')
     stub = REMOTE.SecureMessagingStub(channel)
     return stub
 
@@ -36,4 +40,20 @@ def initializeServerConnection():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     REMOTE.add_SecureMessagingServicer_to_server(Server(), server)
     server.add_insecure_port('[::]:50050')
+    server.start()
+    server.wait_for_termination()
     return server
+
+if __name__ == "__main__":
+    pid = os.fork()
+    if pid == 0:
+        time.sleep(4)
+        neighbor = ""
+        if(socket.gethostname() == "client1"):
+            neighbor = socket.gethostbyname("client2")
+        else:
+            neighbor = socket.gethostbyname("client1")
+            stub = initializeClientConnection(neighbor)
+            stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
+    else:
+        initializeServerConnection()
