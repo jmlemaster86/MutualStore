@@ -3,6 +3,7 @@ import hashlib
 import socket
 
 numNodes = 8
+ip = socket.gethostbyname(socket.gethostname())
 
 class Node():
 
@@ -28,14 +29,30 @@ class Node():
             if(oldDist > newDist):
                 self.finger[a] = (k,i)
 
+    def mostPrev(self, k):
+        result = (self.key, self.ip)
+        for a in self.finger:
+            oldDist = (k - result[0] + (2**numNodes)) % (2**numNodes)
+            newDist = (k - a[0] + (2**numNodes)) % (2**numNodes)
+            if(oldDist > newDist):
+                result = a
+            return result
+        
+
+
     def printFingers(self):
         for f in self.finger:
             print(f)
+
+        
 
 class Nodes:
 
     def __init__(self):
         self.nodes = []
+        for a in range(diskUtils.blockNum):
+            self.addNode(hash((ip + str(a)).encode("utf-8")), ip)
+
 
     def addNode(self, k, i):
         self.nodes.append(Node(k,i))
@@ -46,20 +63,29 @@ class Nodes:
             self.nodes[a].addPrev(k,i)
             self.nodes[a].addFinger(k,i)
 
-    def update(self, k, i):
-        for a in range(len(self.nodes)):
-            self.nodes[a].addPrev(k, i)
-            self.nodes[a].addFinger(k, i)
+    def update(self, i, numBlocks):
+        for p in range(numBlocks):
+            k = hash((i + str(p)).encode("utf-8"))
+            for a in range(len(self.nodes)):
+                self.nodes[a].addPrev(k, i)
+                self.nodes[a].addFinger(k, i)
+
+    def mostPrev(self, k):
+        result = self.nodes[0]
+        for a in self.nodes:
+            oldDist = (k - result.key + (2**numNodes)) % (2**numNodes)
+            newDist = (k - a.key + (2**numNodes)) % (2**numNodes)
+            if(oldDist > newDist):
+                result = a
+        return result.mostPrev(k)
+            
+
 
 def hash(data):
     return int(hashlib.sha1(data).hexdigest()[:10], 16) % 2**numNodes
 
-if __name__ == "__main__":
-    ip = socket.gethostbyname(socket.gethostname())
-    N = Nodes()
-    for a in range(diskUtils.blockNum):
-        key = hash(ip + str(a))
-        N.addNode(key,ip)
 
+if __name__ == "__main__":
+    N = Nodes()
     for node in N.nodes:
         node.printFingers()

@@ -1,17 +1,30 @@
+import diskUtils as DISK
+import disHash as CHORD
 import grpc
-import rsa_pb2_grbc as REMOTE
-import rsa_pb2 as MESSAGE
+import mutualStore_pb2_grbc as REMOTE
+import mutualStore_pb2 as MESSAGE
 from concurrent import futures
 
+
 class Server(REMOTE.SecureMessagingServicer):
+    
+    def __init__(self):
+        self.chord = CHORD.Nodes()
 
     def storeBlock(self, request, context):
+        return None
 
     def getBlock(self, request, context):
+        return None
 
-    def getInfo(self, request, context):
-
-    def forwardRequest(self, request, context):
+    def joinNode(self, request, context):
+        result = 0
+        try:
+            self.chord.update(request.ip, request.numBlocks)
+            result = 1
+        except:
+            print("Unable to update.")
+        return MESSAGE.Confirmation(status = result)
 
 
 def initializeClientConnection(server_ip):
