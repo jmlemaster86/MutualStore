@@ -53,7 +53,7 @@ if __name__ == "__main__":
             neighbor = socket.gethostbyname("client2")
         else:
             neighbor = socket.gethostbyname("client1")
-            stub = initializeClientConnection(neighbor)
-            stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
+        stub = initializeClientConnection(neighbor)
+        stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
     else:
         initializeServerConnection()
