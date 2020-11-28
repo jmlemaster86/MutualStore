@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+service SecureMessaging{
+
+    rpc StoreBlock (StoreReq) returns (Confirmation) {}
+    
+    rpc RetrieveBlock (RetrieveReq) returns (BlockMsg) {}
+
+    rpc JoinNode (JoinReq) returns (Confirmation) {}
+}
+
+message StoreReq{
+    int key = 1;
+    bytes data = 2;
+}
+
+message RetrieveReq{
+    int key = 1;
+    String ip = 2;
+}
+
+message JoinReq{
+    String ip = 1;
+    int numBlocks = 2;
+}
+
+message BlockMsg{
+    bytes data = 1;
+}
+
+message Confirmation{
+    int status = 1;
+}
+

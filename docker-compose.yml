@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  client1:
+    build: .
+    environment:
+      - TZ=American/Chicago
+      - DEBIAN_FRONTEND=noninteractive
+    hostname: client1
+    container_name: client1
+    networks:
+      - default
+  client2:
+    build: .
+    environment:
+      - TZ=American/Chicago
+      - DEBIAN_FRONTEND=noninteractive
+    hostname: client2
+    container_name: client2
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

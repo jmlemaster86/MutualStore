@@ -2,60 +2,90 @@ import diskUtils
 import hashlib
 import socket
 
+numNodes = 8
+ip = socket.gethostbyname(socket.gethostname())
+
 class Node():
-    thisNode = ()
-    fingers = []
 
-    def createNode(self):
-        ip = socket.gethostbyname(socket.gethostname())
-        key = hash(ip)
-        self.thisNode = (key, ip)
-        return self
+    def __init__(self, k, i):
+        self.key = k
+        self.ip = i
+        self.finger = []
+        self.prev = (k, i)
+        for a in range(numNodes):
+            self.finger.append((self.key, self.ip))
 
-    def addFinger(self, ip):
-        key = hash(ip)
+    def addPrev(self, k, i):
+        oldDist = (self.key - self.prev[0]  + (2**numNodes - 1)) % (2**numNodes)
+        newDist = (self.key - k + (2**numNodes - 1)) % (2**numNodes)
+        if(oldDist > newDist):
+            self.prev = (k, i)
+
+    def addFinger(self, k, i):
+        for a in range(numNodes):
+            testKey = (self.key + 2**a) % (2**numNodes)
+            oldDist = (self.finger[a][0] - testKey + (2**numNodes)) % (2**numNodes)
+            newDist = (k - testKey + (2**numNodes)) % (2**numNodes)
+            if(oldDist > newDist):
+                self.finger[a] = (k,i)
+
+    def mostPrev(self, k):
+        result = (self.key, self.ip)
+        for a in self.finger:
+            oldDist = (k - result[0] + (2**numNodes)) % (2**numNodes)
+            newDist = (k - a[0] + (2**numNodes)) % (2**numNodes)
+            if(oldDist > newDist):
+                result = a
+            return result
         
+
+
+    def printFingers(self):
+        for f in self.finger:
+            print(f)
+
         
 
-class Table():
-    entry = []
+class Nodes:
 
-    def createTable(self):
-        ip = socket.gethostbyname(socket.gethostname())
+    def __init__(self):
+        self.nodes = []
         for a in range(diskUtils.blockNum):
-            key = hash(ip + ':' + str(a))
-            node = Node()
-            node.thisNode = (key, ip)
-            self.entry.append(node)
-        return self
+            self.addNode(hash((ip + str(a)).encode("utf-8")), ip)
 
-    def addEntry(self, ip, block):
-        for a in range(block):
-            key = hash(ip + str(a))
-            loc = self.find(key)
-            if loc > -1:
-                entry[loc].succesor = (key, ip)
-        return self
 
-    def find(self, key):
-        for a in range(diskUtils.blockNum):
-            try:
-                if self.entry[a].thisNode[0] < key and self.entry[a + 1].thisNode[0] > key:
-                    return a
-            except:
-                return -1
+    def addNode(self, k, i):
+        self.nodes.append(Node(k,i))
+        for a in range(len(self.nodes)):
+            self.nodes[len(self.nodes) - 1].addPrev(self.nodes[a].key, self.nodes[a].ip)
+            self.nodes[len(self.nodes) - 1].addFinger(self.nodes[a].key, self.nodes[a].ip)
+        for a in range(len(self.nodes)):
+            self.nodes[a].addPrev(k,i)
+            self.nodes[a].addFinger(k,i)
 
-    
+    def update(self, i, numBlocks):
+        for p in range(numBlocks):
+            k = hash((i + str(p)).encode("utf-8"))
+            for a in range(len(self.nodes)):
+                self.nodes[a].addPrev(k, i)
+                self.nodes[a].addFinger(k, i)
+
+    def mostPrev(self, k):
+        result = self.nodes[0]
+        for a in self.nodes:
+            oldDist = (k - result.key + (2**numNodes)) % (2**numNodes)
+            newDist = (k - a.key + (2**numNodes)) % (2**numNodes)
+            if(oldDist > newDist):
+                result = a
+        return result.mostPrev(k)
+            
 
 
 def hash(data):
-    return int(hashlib.sha1(data).digest()[:10], 16)
+    return int(hashlib.sha1(data).hexdigest()[:10], 16) % 2**numNodes
+
 
 if __name__ == "__main__":
-    t = Table()
-    t.createTable()
-    t.addEntry('192.168.7.1', 10)
-
-    for a in t.entry:
-        print(a.thisNode)
-        print(a.succesor)
+    N = Nodes()
+    for node in N.nodes:
+        node.printFingers()
