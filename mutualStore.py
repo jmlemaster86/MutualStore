@@ -30,3 +30,5 @@ if __name__ == "__main__":
             if(sys.argv[1] == 'store'):
                 with open(sys.argv[2], 'rb') as file:
                     storeFile(file)
+    else:
+        CON.initializeServerConnection()
