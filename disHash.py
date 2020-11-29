@@ -86,9 +86,9 @@ class Nodes:
         result = self.nodes[0]
         for a in self.nodes:
             oldDist = (result.mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
-            newDist = (self.nodes[a].mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
+            newDist = (a.mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
-                result = self.nodes[a]
+                result = a
         return result.mostPrev(k)[1]
 
     def inRange(self, k):
