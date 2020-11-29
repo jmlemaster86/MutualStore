@@ -13,13 +13,14 @@ class Server(REMOTE.SecureMessagingServicer):
     
     def __init__(self):
         self.chord = CHORD.Nodes()
+        DISK.fdisk()
 
     def StoreBlock(self, request, context):
         block = self.chord.inRange(request.key)
         if block > -1:
             print("Storing data")
             DISK.saveBlock(block, request.data)
-            return MESSAGE.Confirmation(status = 0)
+            return MESSAGE.Confirmation(status = 1)
         else:
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
@@ -75,8 +76,9 @@ if __name__ == "__main__":
         else:
             neighbor = socket.gethostbyname("client1")
         stub = initializeClientConnection(neighbor)
-        if stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum)) > 0:
+        stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
+        if neighbor == socket.gethostbyname("client2"):
             for a in range(10):
-                stub.StoreBlock(MESSAGE.StoreReq(key = a, data = bytearray()))
+                stub.StoreBlock(MESSAGE.StoreReq(key = a, data = bytes("Hello World", 'utf-8')))
     else:
         initializeServerConnection()
