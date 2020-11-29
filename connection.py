@@ -22,6 +22,7 @@ class Server(REMOTE.SecureMessagingServicer):
         else:
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
+            print("Forwarding storage request.")
             return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
         return MESSAGE.Confirmation(status = 0)
 
@@ -48,6 +49,7 @@ def initializeServerConnection():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     REMOTE.add_SecureMessagingServicer_to_server(Server(), server)
     server.add_insecure_port('[::]:50050')
+    print("Starting server connection.")
     server.start()
     server.wait_for_termination()
     return server
@@ -62,6 +64,8 @@ if __name__ == "__main__":
         else:
             neighbor = socket.gethostbyname("client1")
         stub = initializeClientConnection(neighbor)
-        stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
+        if stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum)) > 0:
+            for a in range(100):
+                stub.StoreBlock(MESSAGE.StoreReq(key = a, data = bytearray()))
     else:
         initializeServerConnection()

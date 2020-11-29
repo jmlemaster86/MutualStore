@@ -40,10 +40,10 @@ class Node():
 
     def inRange(self, k):
         if(self.prev[0] > self.key):
-            if(k < self.key or k > self.prev[0]):
+            if(k <= self.key or k > self.prev[0]):
                 return 1
         else:
-            if(k < self.key and k > self.prev):
+            if(k <= self.key and k > self.prev):
                 return 1
         return 0
         
