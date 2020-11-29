@@ -6,7 +6,13 @@ import os
 import time
 import socket
 
-def storeFile(data):
+def storeFile(fileName):
+    data = bytearray()
+    with open(fileName, 'rb') as file:
+        byte = file.read(1)
+        while byte:
+           data.append(byte[0])
+           byte = file.read(1)
     block = bytearray(DISK.blockSize)
     a = 0
     while(a < len(data)):
@@ -36,12 +42,6 @@ if __name__ == "__main__":
         CON.createConnections()
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
-                with open(sys.argv[2], 'rb') as file:
-                    data = bytearray()
-                    byte = file.read(1)
-                    while byte:
-                        data.append(byte[0])
-                        byte = file.read(1)
-                    storeFile(data)
+                storeFile(sys.argv[2])
     else:
         CON.initializeServerConnection()
