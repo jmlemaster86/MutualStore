@@ -22,13 +22,6 @@ def storeFile(fileName):
             if a >= len(data):
                 break
         key = CHORD.hash(block)
-        loc = CON.chord.inRange(key)
-        if(loc > -1):
-            DISK.saveBlock(loc, block)
-        else:
-            nextServer = CON.chord.mostPrev(key)
-            stub = CON.initializeClientConnection(nextServer)
-            stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = block))
 
 def retrieveFile(name):
     return None
@@ -39,7 +32,7 @@ if __name__ == "__main__":
     pid = os.fork()
     if(pid == 0):
         time.sleep(2)
-        CON.createConnections()
+        CON.chord.nodes[0].printFingers()
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
                 storeFile(sys.argv[2])

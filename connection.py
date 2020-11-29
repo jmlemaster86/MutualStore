@@ -8,31 +8,33 @@ import mutualStore_pb2_grpc as REMOTE
 import mutualStore_pb2 as MESSAGE
 from concurrent import futures
 
-chord = CHORD.Nodes()
 
 class Server(REMOTE.SecureMessagingServicer):
 
+    def __init__(self):
+        self.chord = CHORD.Nodes()
+
     def StoreBlock(self, request, context):
-        block = chord.inRange(request.key)
+        block = self.chord.inRange(request.key)
         if block > -1:
             print("Storing data")
             DISK.saveBlock(block, request.data)
             return MESSAGE.Confirmation(status = 1)
         else:
-            nextServer = chord.mostPrev(request.key)
+            nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding storage request.")
             return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
         return MESSAGE.Confirmation(status = 0)
 
     def RetrieveBlock(self, request, context):
-        block = chord.inRange(request.key)
+        block = self.chord.inRange(request.key)
         if block > -1:
             print("Retrieving block")
             diskData = DISK.loadBlock(block)
             return MESSAGE.BlockMsg(data = diskData)
         else:
-            nextServer = chord.mostPrev(request.key)
+            nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding load request")
             return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key))
@@ -41,7 +43,7 @@ class Server(REMOTE.SecureMessagingServicer):
     def JoinNode(self, request, context):
         result = 0
         try:
-            chord.update(request.ip, request.numBlocks)
+            self.chord.update(request.ip, request.numBlocks)
             result = 1
         except:
             print("Unable to update.")
