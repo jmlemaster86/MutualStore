@@ -63,6 +63,15 @@ def initializeServerConnection():
     server.wait_for_termination()
     return server
 
+def createConnections():
+    neighbor = ""
+    if socket.gethostname() == "client1":
+        neighbor = socket.gethostbyname("client2")
+    else:
+        neighbor = socket.gethostbyname("client1")
+    stub = initializeClientConnection(neighbor)
+    stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
+
 if __name__ == "__main__":
     pid = os.fork()
     if pid == 0:

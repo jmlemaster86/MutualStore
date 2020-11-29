@@ -4,6 +4,7 @@ import disHash as CHORD
 import sys
 import os
 import time
+import socket
 
 def storeFile(data):
     block = bytearray(DISK.blockSize)
@@ -32,6 +33,7 @@ if __name__ == "__main__":
     pid = os.fork()
     if(pid == 0):
         time.sleep(2)
+        CON.createConnections()
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
                 with open(sys.argv[2], 'rb') as file:
