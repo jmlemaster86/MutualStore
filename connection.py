@@ -18,6 +18,7 @@ class Server(REMOTE.SecureMessagingServicer):
         block = self.chord.inRange(request.key)
         if block > -1:
             print("Storing data")
+            DISK.saveBlock(block, request.data)
             return MESSAGE.Confirmation(status = 0)
         else:
             nextServer = self.chord.mostPrev(request.key)
@@ -26,8 +27,18 @@ class Server(REMOTE.SecureMessagingServicer):
             return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
         return MESSAGE.Confirmation(status = 0)
 
-    def getBlock(self, request, context):
-        return None
+    def RetrieveBlock(self, request, context):
+        block = self.chord.inRange(request.key)
+        if block > -1:
+            print("Retrieving block")
+            diskData = DISK.loadBlock(block)
+            return MESSAGE.BlockMsg(data = diskData)
+        else:
+            nextServer = self.chord.mostPrev(request.key)
+            stub = initializeClientConnection(nextServer)
+            print("Forwarding load request")
+            return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key))
+        return MESSAGE.BlockMsg(data = None)
 
     def JoinNode(self, request, context):
         result = 0
@@ -65,7 +76,7 @@ if __name__ == "__main__":
             neighbor = socket.gethostbyname("client1")
         stub = initializeClientConnection(neighbor)
         if stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum)) > 0:
-            for a in range(100):
+            for a in range(10):
                 stub.StoreBlock(MESSAGE.StoreReq(key = a, data = bytearray()))
     else:
         initializeServerConnection()

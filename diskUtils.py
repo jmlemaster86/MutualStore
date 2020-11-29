@@ -39,13 +39,3 @@ def findEmptyBlock():
         
 if __name__ == "__main__":
     fdisk()
-    inputArray = bytearray()
-    while True:
-        try:
-            currentInput = raw_input()
-            for a in currentInput:
-                inputArray.append(a)
-        except:
-            break
-    writeFile(inputArray)
-    print(readFile(0))
