@@ -22,6 +22,7 @@ def storeFile(fileName):
             if a >= len(data):
                 break
         key = CHORD.hash(block)
+        CON.initializeClientConnection('127.0.0.1')
 
 def retrieveFile(name):
     return None
@@ -32,7 +33,6 @@ if __name__ == "__main__":
     pid = os.fork()
     if(pid == 0):
         time.sleep(2)
-        CON.chord.nodes[0].printFingers()
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
                 storeFile(sys.argv[2])
