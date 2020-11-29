@@ -37,4 +37,4 @@ EXPOSE 50050-50100
 ENV PYTHONUNBUFFERED=1
 
 # Run the node
-CMD ["python3", "connection.py"]
+CMD ["python3", "mutualStore.py store testFile.txt"]
