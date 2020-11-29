@@ -14,8 +14,16 @@ class Server(REMOTE.SecureMessagingServicer):
     def __init__(self):
         self.chord = CHORD.Nodes()
 
-    def storeBlock(self, request, context):
-        return None
+    def StoreBlock(self, request, context):
+        block = self.chord.inRange(request.key)
+        if block > -1:
+            print("Storing data")
+            return MESSAGE.Confirmation(status = 0)
+        else:
+            nextServer = self.chord.mostPrev(request.key)
+            stub = initializeClientConnection(nextServer)
+            return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
+        return MESSAGE.Confirmation(status = 0)
 
     def getBlock(self, request, context):
         return None
@@ -24,7 +32,6 @@ class Server(REMOTE.SecureMessagingServicer):
         result = 0
         try:
             self.chord.update(request.ip, request.numBlocks)
-            self.chord.nodes[0].printFingers()
             result = 1
         except:
             print("Unable to update.")
@@ -32,6 +39,7 @@ class Server(REMOTE.SecureMessagingServicer):
 
 
 def initializeClientConnection(server_ip):
+    print("Initializing client connection to " + server_ip)
     channel = grpc.insecure_channel(server_ip + ':50050')
     stub = REMOTE.SecureMessagingStub(channel)
     return stub

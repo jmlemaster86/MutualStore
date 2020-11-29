@@ -37,6 +37,15 @@ class Node():
             if(oldDist > newDist):
                 result = a
             return result
+
+    def inRange(self, k):
+        if(self.prev[0] > self.key):
+            if(k < self.key or k > self.prev[0]):
+                return 1
+        else:
+            if(k < self.key and k > self.prev):
+                return 1
+        return 0
         
 
 
@@ -78,6 +87,12 @@ class Nodes:
             if(oldDist > newDist):
                 result = a
         return result.mostPrev(k)
+
+    def inRange(self, k):
+        for a in range(diskUtils.blockNum):
+            if self.nodes[a] > 0:
+                return a
+        return -1
             
 
 
