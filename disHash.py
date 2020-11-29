@@ -38,7 +38,7 @@ class Node():
             newDist = (k - a[0] + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
                 result = a
-            return result[1]
+            return result
         return ""
 
     def inRange(self, k):
@@ -85,11 +85,11 @@ class Nodes:
     def mostPrev(self, k):
         result = self.nodes[0]
         for a in self.nodes:
-            oldDist = (k - result.key + (2**numNodes)) % (2**numNodes)
-            newDist = (k - a.key + (2**numNodes)) % (2**numNodes)
+            oldDist = (result.mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
+            newDist = (self.nodes[a].mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
-                result = a
-        return result.mostPrev(k)
+                result = self.nodes[a]
+        return result.mostPrev(k)[1]
 
     def inRange(self, k):
         for a in range(diskUtils.blockNum):
