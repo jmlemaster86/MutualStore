@@ -35,7 +35,7 @@ class Server(REMOTE.SecureMessagingServicer):
         else:
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
-            print("Forwarding storage request with key: " + str(request.key) + " to " + socket.gethostname(nextServer))
+            print("Forwarding storage request with key: " + str(request.key) + " to " + str(nextServer))
             return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data, name = request.name))
         return MESSAGE.Confirmation(status = 0)
 

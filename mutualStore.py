@@ -35,7 +35,7 @@ if __name__ == "__main__":
     if(pid == 0):
         time.sleep(2)
         CON.createConnections()
-        time.sleep(1)
+        time.sleep(5)
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
                 if(socket.gethostname() == "client1"):
