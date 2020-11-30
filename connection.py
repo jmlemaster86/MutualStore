@@ -80,7 +80,7 @@ def initializeServerConnection():
 def createConnections():
     for a in range(5):
         neighbor = ""
-        name = "client" + str(a+1)
+        name = 'client' + str(a+1)
         if(socket.gethostname() != name):
             neighbor = socket.gethostbyname(name)
             stub = initializeClientConnection(neighbor)

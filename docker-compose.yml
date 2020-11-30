@@ -24,8 +24,8 @@ services:
     environment:
       - TZ=American/Chicago
       - DEBIAN_FRONTEND=noninteractive
-    hostname: client1
-    container_name: client1
+    hostname: client3
+    container_name: client3
     networks:
       - default
   client4:
@@ -33,8 +33,8 @@ services:
     environment:
       - TZ=American/Chicago
       - DEBIAN_FRONTEND=noninteractive
-    hostname: client1
-    container_name: client1
+    hostname: client4
+    container_name: client4
     networks:
       - default
   client5:
@@ -42,8 +42,8 @@ services:
     environment:
       - TZ=American/Chicago
       - DEBIAN_FRONTEND=noninteractive
-    hostname: client1
-    container_name: client1
+    hostname: client5
+    container_name: client5
     networks:
       - default
 
