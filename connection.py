@@ -78,13 +78,13 @@ def initializeServerConnection():
     return server
 
 def createConnections():
-    neighbor = ""
-    if socket.gethostname() == "client1":
-        neighbor = socket.gethostbyname("client2")
-    else:
-        neighbor = socket.gethostbyname("client1")
-    stub = initializeClientConnection(neighbor)
-    stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum, name = ""))
+    for a in range(5):
+        neighbor = ""
+        name = "client" + str(a+1)
+        if(socket.gethostname() != name):
+            neighbor = socket.gethostbyname(name)
+            stub = initializeClientConnection(neighbor)
+            stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum, name = ""))
 
 if __name__ == "__main__":
     pid = os.fork()

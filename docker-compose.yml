@@ -19,6 +19,33 @@ services:
     container_name: client2
     networks:
       - default
+  client3:
+    build: .
+    environment:
+      - TZ=American/Chicago
+      - DEBIAN_FRONTEND=noninteractive
+    hostname: client1
+    container_name: client1
+    networks:
+      - default
+  client4:
+    build: .
+    environment:
+      - TZ=American/Chicago
+      - DEBIAN_FRONTEND=noninteractive
+    hostname: client1
+    container_name: client1
+    networks:
+      - default
+  client5:
+    build: .
+    environment:
+      - TZ=American/Chicago
+      - DEBIAN_FRONTEND=noninteractive
+    hostname: client1
+    container_name: client1
+    networks:
+      - default
 
 networks:
   default:

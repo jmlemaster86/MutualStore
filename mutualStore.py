@@ -38,7 +38,8 @@ if __name__ == "__main__":
         time.sleep(1)
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
-                storeFile(sys.argv[2])
+                if(socket.gethostname() == "client1"):
+                    storeFile(sys.argv[2])
             if(sys.argv[1] == 'load'):
                 retrieveFile(sys.argv[2])
     else:
