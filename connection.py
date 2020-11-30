@@ -25,7 +25,7 @@ class Server(REMOTE.SecureMessagingServicer):
                 if(fileNode.fileName == request.name):
                     nameFlag = True
             if(not nameFlag):
-                self.fileNodes.append(CHORD.Nodes(request.fileName))
+                self.fileNodes.append(CHORD.Nodes(request.name))
                 self.numFiles += 1
             for a in range(self.numFiles):
                 if self.fileNodes[a].fileName == request.name:
