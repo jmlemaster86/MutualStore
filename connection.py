@@ -19,7 +19,7 @@ class Server(REMOTE.SecureMessagingServicer):
     def StoreBlock(self, request, context):
         block = self.chord.inRange(request.key)
         if block > -1:
-            print("Storing data")
+            print("Storing data with key: " + str(request.key) + " in block: " + str(block))
             nameFlag = False
             for fileNode in self.fileNodes:
                 if(fileNode.fileName == request.name):
@@ -35,7 +35,7 @@ class Server(REMOTE.SecureMessagingServicer):
         else:
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
-            print("Forwarding storage request.")
+            print("Forwarding storage request with key: " + str(request.key) + " to " + socket.gethostname(nextServer))
             return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data, name = request.name))
         return MESSAGE.Confirmation(status = 0)
 
