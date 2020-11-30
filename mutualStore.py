@@ -23,9 +23,9 @@ def storeFile(fileName):
                 break
         key = CHORD.hash(block)
         stub = CON.initializeClientConnection('127.0.0.1')
-        stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(block)))
+        stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(block), name = fileName))
 
-def retrieveFile(name):
+def retrieveFile(fileName):
     return None
 
 if __name__ == "__main__":
@@ -39,5 +39,7 @@ if __name__ == "__main__":
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
                 storeFile(sys.argv[2])
+            if(sys.argv[1] == 'load'):
+                retrieveFile(sys.argv[2])
     else:
         CON.initializeServerConnection()

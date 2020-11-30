@@ -12,16 +12,17 @@ service SecureMessaging{
 message StoreReq{
     int32 key = 1;
     bytes data = 2;
+    string name = 3;
 }
 
 message RetrieveReq{
     int32 key = 1;
-    string ip = 2;
 }
 
 message JoinReq{
     string ip = 1;
     int32 numBlocks = 2;
+    string name = 3;
 }
 
 message BlockMsg{

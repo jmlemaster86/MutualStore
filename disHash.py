@@ -2,7 +2,7 @@ import diskUtils
 import hashlib
 import socket
 
-numNodes = 8
+numNodes = 20
 ip = socket.gethostbyname(socket.gethostname())
 
 class Node():
@@ -60,10 +60,14 @@ class Node():
 
 class Nodes:
 
-    def __init__(self):
+    def __init__(self, fileName = None):
         self.nodes = []
-        for a in range(diskUtils.blockNum):
-            self.addNode(hash((ip + str(a)).encode("utf-8")), ip)
+        if(fileName == None):
+            self.fileName = ""
+            for a in range(diskUtils.blockNum):
+                self.addNode(hash((ip + str(a)).encode("utf-8")), ip)
+        else:
+            self.fileName = fileName
 
 
     def addNode(self, k, i):
@@ -97,6 +101,9 @@ class Nodes:
                 return a
         return -1
             
+
+
+
 
 
 def hash(data):

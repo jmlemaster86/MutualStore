@@ -13,18 +13,30 @@ class Server(REMOTE.SecureMessagingServicer):
 
     def __init__(self):
         self.chord = CHORD.Nodes()
+        self.fileNodes = []
+        self.numFiles = 0
 
     def StoreBlock(self, request, context):
         block = self.chord.inRange(request.key)
         if block > -1:
             print("Storing data")
+            nameFlag = False
+            for fileNode in self.fileNodes:
+                if(fileNode.fileName == request.name):
+                    nameFlag = True
+            if(not nameFlag):
+                self.fileNodes.append(CHORD.Nodes(request.fileName))
+                self.numFiles += 1
+            for a in range(self.numFiles):
+                if self.fileNodes[a].fileName == request.name:
+                    self.fileNodes[a].addNode(request.key, CHORD.ip)
             DISK.saveBlock(block, request.data)
             return MESSAGE.Confirmation(status = 1)
         else:
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding storage request.")
-            return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
+            return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data, name = request.name))
         return MESSAGE.Confirmation(status = 0)
 
     def RetrieveBlock(self, request, context):
@@ -41,13 +53,13 @@ class Server(REMOTE.SecureMessagingServicer):
         return MESSAGE.BlockMsg(data = None)
 
     def JoinNode(self, request, context):
-        result = 0
-        try:
+        if(request.name == ""):
             self.chord.update(request.ip, request.numBlocks)
-            result = 1
-        except:
-            print("Unable to update.")
-        return MESSAGE.Confirmation(status = result)
+        else:
+            for a in range(self.numFiles):
+                if self.fileNodes[a].fileName == request.name:
+                    self.fileNodes[a].update(request.ip, request.numBlocks)
+        return MESSAGE.Confirmation(status = 1)
 
 
 def initializeClientConnection(server_ip):
@@ -72,7 +84,7 @@ def createConnections():
     else:
         neighbor = socket.gethostbyname("client1")
     stub = initializeClientConnection(neighbor)
-    stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
+    stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum, name = ""))
 
 if __name__ == "__main__":
     pid = os.fork()
