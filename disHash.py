@@ -96,6 +96,7 @@ class Nodes:
         if(result.mostPrev(k)[1] == ip):
             for a in self.nodes:
                 if a.key == result.mostPrev(k)[0]:
+                    print("Sending " + str(k) + " to " + str(a.directSuccessor()[0]))
                     return a.directSuccessor()[1]
         else:
             return result.mostPrev(k)[1]
