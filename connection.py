@@ -69,7 +69,7 @@ def initializeClientConnection(server_ip):
     return stub
 
 def initializeServerConnection():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=100))
     REMOTE.add_SecureMessagingServicer_to_server(Server(), server)
     server.add_insecure_port('[::]:50050')
     print("Starting server connection.")

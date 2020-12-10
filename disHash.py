@@ -2,7 +2,7 @@ import diskUtils
 import hashlib
 import socket
 
-numNodes = 20
+numNodes = 10
 ip = socket.gethostbyname(socket.gethostname())
 
 class Node():
@@ -89,13 +89,17 @@ class Nodes:
                 self.nodes[a].addFinger(k, i)
 
     def mostPrev(self, k):
-        result = self.nodes[0]
+        result = self.nodes[0].mostPrev(k)
         for a in self.nodes:
-            oldDist = (result.mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
-            newDist = (a.mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
+            oldDist = (k - result[0] + (2**numNodes)) % (2**numNodes)
+            newDist = (k - a.mostPrev(k)[0] + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
-                result = a
-        return result.mostPrev(k)[1]
+                result = a.mostPrev(k)
+        if(result[1] == ip):
+            for a in self.nodes:
+                if a.key == result[0]:
+                    result = a.directSuccessor()
+        return result[1]
 
     def inRange(self, k):
         for a in range(diskUtils.blockNum):

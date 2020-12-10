@@ -1,5 +1,5 @@
 blockSize = 256
-blockNum = 2
+blockNum = 10
 diskSize = blockSize * blockNum
     
 def fdisk():
