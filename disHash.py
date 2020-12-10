@@ -36,9 +36,11 @@ class Node():
             newDist = (k - a[0] + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
                 result = a
+        print("The most prev of " + str(k) + " is " + str(result))
         return result
 
     def inRange(self, k):
+        print("Checking if " + str(k) + " is in range " + str(self.prev[0]) + " - " + str(self.key))
         if(self.prev[0] >= self.key):
             if(k <= self.key or k > self.prev[0]):
                 return 1
@@ -93,13 +95,7 @@ class Nodes:
             newDist = (a.mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
                 result = a
-        if(result.mostPrev(k)[1] == ip):
-            for a in self.nodes:
-                if a.key == result.mostPrev(k)[0]:
-                    print("Sending " + str(k) + " to " + str(a.directSuccessor()[0]))
-                    return a.directSuccessor()[1]
-        else:
-            return result.mostPrev(k)[1]
+        return result.mostPrev(k)[1]
 
     def inRange(self, k):
         for a in range(diskUtils.blockNum):
