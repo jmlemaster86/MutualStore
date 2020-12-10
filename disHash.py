@@ -32,14 +32,11 @@ class Node():
     def mostPrev(self, k):
         result = (self.key, self.ip)
         for a in self.finger:
-            if(a[1] == self.ip):
-                continue
             oldDist = (k - result[0] + (2**numNodes)) % (2**numNodes)
             newDist = (k - a[0] + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
                 result = a
-            return result
-        return ""
+        return result
 
     def inRange(self, k):
         if(self.prev[0] >= self.key):
@@ -49,6 +46,9 @@ class Node():
             if(k <= self.key and k > self.prev[0]):
                 return 1
         return 0
+
+    def directSuccessor(self):
+        return self.finger[0]
         
 
 
@@ -93,7 +93,12 @@ class Nodes:
             newDist = (a.mostPrev(k)[0] - k + (2**numNodes)) % (2**numNodes)
             if(oldDist > newDist):
                 result = a
-        return result.mostPrev(k)[1]
+        if(result.mostPrev(k)[1] == ip):
+            for a in self.nodes:
+                if a.key == result.mostPrev(k)[0]:
+                    return a.directSuccessor()[1]
+        else:
+            return result.mostPrev(k)[1]
 
     def inRange(self, k):
         for a in range(diskUtils.blockNum):
