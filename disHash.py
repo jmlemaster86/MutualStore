@@ -2,7 +2,8 @@ import diskUtils
 import hashlib
 import socket
 
-numNodes = 10
+power = 10
+numNodes = 2**power
 ip = socket.gethostbyname(socket.gethostname())
 
 class Node():
@@ -11,29 +12,30 @@ class Node():
         self.key = k
         self.ip = i
         self.finger = []
+        self.muted = False
         self.prev = (k, i)
         for a in range(numNodes):
             self.finger.append((self.key, self.ip))
 
     def addPrev(self, k, i):
-        oldDist = (self.key - self.prev[0]  + (2**numNodes - 1)) % (2**numNodes)
-        newDist = (self.key - k + (2**numNodes - 1)) % (2**numNodes)
+        oldDist = (self.key - self.prev[0]  + (numNodes - 1)) % (numNodes)
+        newDist = (self.key - k + (numNodes - 1)) % (numNodes)
         if(oldDist > newDist):
             self.prev = (k, i)
 
     def addFinger(self, k, i):
         for a in range(numNodes):
-            testKey = (self.key + 2**a) % (2**numNodes)
-            oldDist = (self.finger[a][0] - testKey + (2**numNodes)) % (2**numNodes)
-            newDist = (k - testKey + (2**numNodes)) % (2**numNodes)
+            testKey = (self.key + 2**a) % (numNodes)
+            oldDist = (self.finger[a][0] - testKey + (numNodes)) % (numNodes)
+            newDist = (k - testKey + (numNodes)) % (numNodes)
             if(oldDist > newDist):
                 self.finger[a] = (k,i)
 
     def mostPrev(self, k):
         result = (self.key, self.ip)
         for a in self.finger:
-            oldDist = (k - result[0] + (2**numNodes)) % (2**numNodes)
-            newDist = (k - a[0] + (2**numNodes)) % (2**numNodes)
+            oldDist = (k - result[0] + (numNodes)) % (numNodes)
+            newDist = (k - a[0] + (numNodes)) % (numNodes)
             if(oldDist > newDist):
                 result = a
         print("The most prev of " + str(k) + " is " + str(result))
@@ -43,9 +45,11 @@ class Node():
         print("Checking if " + str(k) + " is in range " + str(self.prev[0]) + " - " + str(self.key))
         if(self.prev[0] >= self.key):
             if(k <= self.key or k > self.prev[0]):
+                self.muted = True
                 return 1
         else:
             if(k <= self.key and k > self.prev[0]):
+                self.muted = True
                 return 1
         return 0
 
@@ -91,8 +95,8 @@ class Nodes:
     def mostPrev(self, k):
         result = self.nodes[0].mostPrev(k)
         for a in self.nodes:
-            oldDist = (k - result[0] + (2**numNodes)) % (2**numNodes)
-            newDist = (k - a.mostPrev(k)[0] + (2**numNodes)) % (2**numNodes)
+            oldDist = (k - result[0] + (numNodes)) % (numNodes)
+            newDist = (k - a.mostPrev(k)[0] + (numNodes)) % (numNodes)
             if(oldDist > newDist):
                 result = a.mostPrev(k)
         if(result[1] == ip):
@@ -103,17 +107,18 @@ class Nodes:
 
     def inRange(self, k):
         for a in range(diskUtils.blockNum):
+            if self.nodes[a].muted and self.nodes[a].inRange(k) > 0:
+                return(self.nodes[a].directSuccessor()[0], False)
             if self.nodes[a].inRange(k) > 0:
-                return a
-        return -1
-            
+                return (a, True)
+        return (-1, True)
 
 
 
 
 
 def hash(data):
-    return int(hashlib.sha1(data).hexdigest()[:10], 16) % 2**numNodes
+    return int(hashlib.sha1(data).hexdigest()[:10], 16) % numNodes
 
 
 if __name__ == "__main__":

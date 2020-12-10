@@ -17,7 +17,13 @@ class Server(REMOTE.SecureMessagingServicer):
         self.numFiles = 0
 
     def StoreBlock(self, request, context):
-        block = self.chord.inRange(request.key)
+        testVal = self.chord.inRange(request.key)
+        block = -1
+        if testVal[1]:
+            block = testVal[0]
+        else:
+            stub = initializeClientConnection("127.0.0.1")
+            return stub.StoreBlock(MESSAGE.StoreReq(key = testVal[0], data = request.data, name = request.name))
         if block > -1:
             print("Storing data with key: " + str(request.key) + " in block: " + str(block))
             nameFlag = False
