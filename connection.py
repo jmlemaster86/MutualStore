@@ -46,16 +46,18 @@ class Server(REMOTE.SecureMessagingServicer):
         return MESSAGE.Confirmation(status = 0)
 
     def RetrieveBlock(self, request, context):
-        block = self.chord.inRange(request.key)
-        if block > -1:
-            print("Retrieving block")
-            diskData = DISK.loadBlock(block)
-            return MESSAGE.BlockMsg(data = diskData)
-        else:
-            nextServer = self.chord.mostPrev(request.key)
-            stub = initializeClientConnection(nextServer)
-            print("Forwarding load request")
-            return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key))
+        for a in self.fileNodes:
+            if(a.fileName == request.name):
+                block = a.inRange(request.key)[0]
+                if block > -1:
+                    print("Retrieving block")
+                    diskData = DISK.loadBlock(block)
+                    return MESSAGE.BlockMsg(data = diskData)
+                else:
+                    nextServer = self.chord.mostPrev(request.key)
+                    stub = initializeClientConnection(nextServer)
+                    print("Forwarding load request")
+                    return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key, request.name))
         return MESSAGE.BlockMsg(data = None)
 
     def JoinNode(self, request, context):

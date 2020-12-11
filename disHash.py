@@ -45,11 +45,9 @@ class Node():
         print("Checking if " + str(k) + " is in range " + str(self.prev[0]) + " - " + str(self.key))
         if(self.prev[0] >= self.key):
             if(k <= self.key or k > self.prev[0]):
-                self.muted = True
                 return 1
         else:
             if(k <= self.key and k > self.prev[0]):
-                self.muted = True
                 return 1
         return 0
 
@@ -107,9 +105,12 @@ class Nodes:
 
     def inRange(self, k):
         for a in range(diskUtils.blockNum):
-            if self.nodes[a].muted and self.nodes[a].inRange(k) > 0:
+            inRange = self.nodes[a].inRange(k)
+            if self.nodes[a].muted and inRange > 0:
                 return(self.nodes[a].directSuccessor()[0], False)
-            if self.nodes[a].inRange(k) > 0:
+            if inRange > 0:
+                if(self.fileName == None):
+                    self.nodes[a].muted = True
                 return (a, True)
         return (-1, True)
 
