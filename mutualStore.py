@@ -6,7 +6,15 @@ import os
 import time
 import socket
 
+fileIndex = []
+
+class indexEntry():
+    def __init__(self, fileName, keys):
+        self.fileName = fileName
+        self.keys = keys
+
 def storeFile(fileName):
+    keys = []
     data = bytearray()
     with open(fileName, 'rb') as file:
         byte = file.read(1)
@@ -22,11 +30,19 @@ def storeFile(fileName):
             if a >= len(data):
                 break
         key = CHORD.hash(block)
+        keys.append(key)
         stub = CON.initializeClientConnection('127.0.0.1')
         stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(block), name = fileName))
+    fileIndex.append(indexEntry(fileName, keys))
 
 def retrieveFile(fileName):
-    return None
+    data = bytearray()
+    for a in fileIndex:
+        if a.fileName == fileName:
+            for i in a.keys:
+                stub = CON.initializeClientConnection('127.0.0.1')
+                data.append(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i, name = fileName)).data)
+    return data
 
 if __name__ == "__main__":
     if(not os.path.exists("disk.bin")):
