@@ -13,30 +13,17 @@ class Server(REMOTE.SecureMessagingServicer):
 
     def __init__(self):
         self.chord = CHORD.Nodes()
-        self.fileNodes = []
-        self.numFiles = 0
 
     def StoreBlock(self, request, context):
         testVal = self.chord.inRange(request.key)
-        block = -1
-        if testVal[1]:
-            block = testVal[0]
-        else:
+        block = testVal[0]
+        if testVal[2]:
             stub = initializeClientConnection("127.0.0.1")
-            return stub.StoreBlock(MESSAGE.StoreReq(key = testVal[0], data = request.data, name = request.name))
+            return stub.StoreBlock(MESSAGE.StoreReq(key = testVal[1], data = request.data, name = request.name))
         if block > -1:
             print("Storing data with key: " + str(request.key) + " in block: " + str(block))
-            nameFlag = False
-            for fileNode in self.fileNodes:
-                if(fileNode.fileName == request.name):
-                    nameFlag = True
-            if(not nameFlag):
-                self.fileNodes.append(CHORD.Nodes(request.name))
-                self.numFiles += 1
-            for a in range(self.numFiles):
-                if self.fileNodes[a].fileName == request.name:
-                    self.fileNodes[a].addNode(request.key, CHORD.ip)
             DISK.saveBlock(block, request.data)
+            self.chord.mute(request.key)
             return MESSAGE.Confirmation(status = request.key)
         else:
             nextServer = self.chord.mostPrev(request.key)
@@ -46,27 +33,20 @@ class Server(REMOTE.SecureMessagingServicer):
         return MESSAGE.Confirmation(status = -1)
 
     def RetrieveBlock(self, request, context):
-        for a in self.fileNodes:
-            if(a.fileName == request.name):
-                block = a.inRange(request.key)[0]
-                if block > -1:
-                    print("Retrieving block")
-                    diskData = DISK.loadBlock(block)
-                    return MESSAGE.BlockMsg(data = diskData)
-                else:
-                    nextServer = self.chord.mostPrev(request.key)
-                    stub = initializeClientConnection(nextServer)
-                    print("Forwarding load request")
-                    return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key, request.name))
+        block = a.inRange(request.key)[0]
+        if block > -1:
+            print("Retrieving block")
+            diskData = DISK.loadBlock(block)
+            return MESSAGE.BlockMsg(data = diskData)
+        else:
+            nextServer = self.chord.mostPrev(request.key)
+            stub = initializeClientConnection(nextServer)
+            print("Forwarding load request")
+            return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key, request.name))
         return MESSAGE.BlockMsg(data = None)
 
     def JoinNode(self, request, context):
-        if(request.name == ""):
-            self.chord.update(request.ip, request.numBlocks)
-        else:
-            for a in range(self.numFiles):
-                if self.fileNodes[a].fileName == request.name:
-                    self.fileNodes[a].update(request.ip, request.numBlocks)
+        self.chord.update(request.ip, request.numBlocks)
         return MESSAGE.Confirmation(status = 1)
 
 

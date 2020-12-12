@@ -64,14 +64,10 @@ class Node():
 
 class Nodes:
 
-    def __init__(self, fileName = None):
+    def __init__(self):
         self.nodes = []
-        if(fileName == None):
-            self.fileName = ""
-            for a in range(diskUtils.blockNum):
-                self.addNode(hash((ip + str(a)).encode("utf-8")), ip)
-        else:
-            self.fileName = fileName
+        for a in range(diskUtils.blockNum):
+            self.addNode(hash((ip + str(a)).encode("utf-8")), ip)
 
 
     def addNode(self, k, i):
@@ -104,15 +100,18 @@ class Nodes:
         return result[1]
 
     def inRange(self, k):
-        for a in range(diskUtils.blockNum):
-            inRange = self.nodes[a].inRange(k)
-            if self.nodes[a].muted and inRange > 0:
-                return(self.nodes[a].directSuccessor()[0], False)
-            if inRange > 0:
-                if(self.fileName == None):
-                    self.nodes[a].muted = True
-                return (a, True)
-        return (-1, True)
+        b = 0
+        while b < diskUtils.blockNum:
+            if(self.nodes[b].inRange(k) > 0):
+                return(b, self.nodes[b].directSuccessor()[0], self.nodes[b].muted)
+            b += 1
+        return(-1, -1, False)
+
+    def mute(self, k):
+        b = 0
+        while b < diskUtils.blockNum:
+            if(self.nodes[b].inRange(k) > 0):
+                self.nodes[b].muted = True
 
 
 

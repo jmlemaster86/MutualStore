@@ -31,7 +31,7 @@ def storeFile(fileName):
                 break
         key = CHORD.hash(block)
         stub = CON.initializeClientConnection('127.0.0.1')
-        keys.append(stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(block), name = fileName)).status)
+        keys.append(stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(block))).status)
     fileIndex.append(indexEntry(fileName, keys))
 
 def retrieveFile(fileName):
@@ -40,7 +40,7 @@ def retrieveFile(fileName):
         if a.fileName == fileName:
             for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
-                data += bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i, name = fileName)).data)
+                data += bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
     return data
 
 if __name__ == "__main__":
