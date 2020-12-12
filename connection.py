@@ -37,13 +37,13 @@ class Server(REMOTE.SecureMessagingServicer):
                 if self.fileNodes[a].fileName == request.name:
                     self.fileNodes[a].addNode(request.key, CHORD.ip)
             DISK.saveBlock(block, request.data)
-            return MESSAGE.Confirmation(status = 1)
+            return MESSAGE.Confirmation(status = request.key)
         else:
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding storage request with key: " + str(request.key) + " to " + str(nextServer))
             return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data, name = request.name))
-        return MESSAGE.Confirmation(status = 0)
+        return MESSAGE.Confirmation(status = -1)
 
     def RetrieveBlock(self, request, context):
         for a in self.fileNodes:
