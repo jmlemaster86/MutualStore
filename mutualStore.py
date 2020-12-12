@@ -21,9 +21,9 @@ def storeFile(fileName):
         while byte:
            data.append(byte[0])
            byte = file.read(1)
-    block = bytearray(DISK.blockSize)
     a = 0
     while(a < len(data)):
+        block = bytearray(DISK.blockSize)
         for i in range(DISK.blockSize):
             block[i] = data[a]
             a += 1

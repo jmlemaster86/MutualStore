@@ -112,6 +112,7 @@ class Nodes:
         while b < diskUtils.blockNum:
             if(self.nodes[b].inRange(k) > 0):
                 self.nodes[b].muted = True
+            b += 1
 
 
 

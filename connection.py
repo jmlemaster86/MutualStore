@@ -19,7 +19,7 @@ class Server(REMOTE.SecureMessagingServicer):
         block = testVal[0]
         if testVal[2]:
             stub = initializeClientConnection("127.0.0.1")
-            return stub.StoreBlock(MESSAGE.StoreReq(key = testVal[1], data = request.data, name = request.name))
+            return stub.StoreBlock(MESSAGE.StoreReq(key = testVal[1], data = request.data))
         if block > -1:
             print("Storing data with key: " + str(request.key) + " in block: " + str(block))
             DISK.saveBlock(block, request.data)
@@ -29,11 +29,11 @@ class Server(REMOTE.SecureMessagingServicer):
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding storage request with key: " + str(request.key) + " to " + str(nextServer))
-            return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data, name = request.name))
+            return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
         return MESSAGE.Confirmation(status = -1)
 
     def RetrieveBlock(self, request, context):
-        block = a.inRange(request.key)[0]
+        block = self.chord.inRange(request.key)[0]
         if block > -1:
             print("Retrieving block")
             diskData = DISK.loadBlock(block)
@@ -42,7 +42,7 @@ class Server(REMOTE.SecureMessagingServicer):
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding load request")
-            return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key, request.name))
+            return stub.RetrieveBlock(MESSAGE.RetrieveReq(key = request.key))
         return MESSAGE.BlockMsg(data = None)
 
     def JoinNode(self, request, context):
@@ -72,7 +72,7 @@ def createConnections():
         if(socket.gethostname() != name):
             neighbor = socket.gethostbyname(name)
             stub = initializeClientConnection(neighbor)
-            stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum, name = ""))
+            stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
 
 if __name__ == "__main__":
     pid = os.fork()
