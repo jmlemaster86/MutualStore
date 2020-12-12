@@ -41,7 +41,8 @@ def retrieveFile(fileName):
         if a.fileName == fileName:
             for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
-                data.append(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i, name = fileName)).data)
+                print(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i, name = fileName)).data.decode('utf-8'))
+                #data += bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i, name = fileName)).data)
     return data
 
 if __name__ == "__main__":
