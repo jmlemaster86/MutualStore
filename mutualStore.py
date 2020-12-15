@@ -104,7 +104,7 @@ if __name__ == "__main__":
     #forks the client and server runtimes
     pid = os.fork()
     if(pid == 0):
-        time.sleep(.5)
+        time.sleep(2)
         #discovers peers
         CON.createConnections()
         time.sleep(1)
