@@ -67,7 +67,7 @@ def retrieveFile(fileName):
                     checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
                 else:
                     try:
-                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i]), timeout=3).data)
+                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i]), timeout=30).data)
                         data += blocks[i]
                     except:
                         if missingBlock > -1:
