@@ -40,7 +40,7 @@ class Server(REMOTE.SecureMessagingServicer):
 
     def RetrieveBlock(self, request, context):
         #Checks if key is in range of any local virtual nodes
-        block = a.inRange(request.key)[0]
+        block = self.chord.inRange(request.key)[0]
         if block > -1:
             #If the node responsible for the key is on this system, return the data stored in that nodes block
             print("Retrieving block")
@@ -56,7 +56,7 @@ class Server(REMOTE.SecureMessagingServicer):
 
     def DeleteBlock(self, request, context):
         #Checks if the key is in range of any local nodes
-        block = a.inRange(request.key)[0]
+        block = self.chord.inRange(request.key)[0]
         if block > -1:
             #if a local node is responsible, unmute the node, which allows the block to be overwritten
             print("Deleting Block")

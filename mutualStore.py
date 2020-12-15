@@ -27,8 +27,6 @@ def storeFile(fileName):
         while byte:
            data.append(byte[0])
            byte = file.read(1)
-    #adds checksum block to end of file
-    data += encode.encode(data)
     #initializes a bytearray to store a blocks worth of data
     block = bytearray(DISK.blockSize)
     a = 0
@@ -45,7 +43,12 @@ def storeFile(fileName):
         stub = CON.initializeClientConnection('127.0.0.1')
         #appends the key returned to the list of keys for the file index
         keys.append(stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(block))).status)
-    #appends the filename and list of keys to the file index
+    #Creates checksum block and stores it on the network
+    checksum = encode.encode(data)
+    key = CHORD.hash(checksum)
+    stub = CON.initializeClientConnection('127.0.0.1')
+    keys.append(stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(checksum))).status)
+    #adds filename and list of keys to file index
     fileIndex.append(indexEntry(fileName, keys))
 
 def retrieveFile(fileName):
