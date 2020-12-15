@@ -67,11 +67,11 @@ def retrieveFile(fileName):
                     checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
                 else:
                     try:
-                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i]), timeout=30).data)
+                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i]), timeout=100).data)
                         data += blocks[i]
                     except:
                         if missingBlock > -1:
-                            return None
+                            return bytearray()
                         else:
                             missingBlock = i
     if missingBlock > -1:
@@ -81,8 +81,7 @@ def retrieveFile(fileName):
         for a in blocks:
             data2 += a
         return data2
-    else:
-        return data
+    return data
 
 def deleteFile(fileName):
     #iterates over all files in the index to find the filename
