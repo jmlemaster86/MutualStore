@@ -53,8 +53,6 @@ class Node():
 
     def directSuccessor(self):
         return self.finger[0]
-        
-
 
     def printFingers(self):
         for f in self.finger:
@@ -108,10 +106,14 @@ class Nodes:
         return(-1, -1, False)
 
     def mute(self, k):
-        b = 0
-        while b < diskUtils.blockNum:
+        for b in range(diskUtils.blockNum):
             if(self.nodes[b].inRange(k) > 0):
                 self.nodes[b].muted = True
+
+    def unmute(self, k):
+        for b in range(diskUtils.blockNum):
+            if(self.nodes[b].inRange(k) > 0):
+                self.nodes[b].muted = False
 
 
 

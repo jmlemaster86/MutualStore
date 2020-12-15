@@ -43,6 +43,13 @@ def retrieveFile(fileName):
                 data += bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
     return data
 
+def deleteFile(fileName):
+    for a in fileIndex:
+        if a.fileName == fileName:
+            for i in a.keys:
+                stub = CON.initializeClientConnection('127.0.0.1')
+                stub.DeleteBlock(CON.MESSAGE.DeleteReq(key = i))
+
 if __name__ == "__main__":
     if(not os.path.exists("disk.bin")):
         DISK.fdisk()
@@ -50,7 +57,7 @@ if __name__ == "__main__":
     if(pid == 0):
         time.sleep(2)
         CON.createConnections()
-        time.sleep(5)
+        time.sleep(3)
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
                 if(socket.gethostname() == "client1"):

@@ -42,8 +42,19 @@ class Server(REMOTE.SecureMessagingServicer):
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding load request")
-            return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key, request.name))
+            return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key))
         return MESSAGE.BlockMsg(data = None)
+
+    def DeleteBlock(self, request, context):
+        block = a.inRange(request.key)[0]
+        if block > -1:
+            print("Deleting Block")
+            self.chord.unmute(request.key)
+        else:
+            nextServer = self.chord.mostPrev(request.key)
+            stub = initializeClientConnection(nextServer)
+            print("Forwarding delete request")
+            return stub.DeleteBlock(MESSAGE.DeleteReq(request.key))
 
     def JoinNode(self, request, context):
         self.chord.update(request.ip, request.numBlocks)
