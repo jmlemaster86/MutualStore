@@ -12,9 +12,10 @@ fileIndex = []
 
 #This class defines the entries of the file index
 class indexEntry():
-    def __init__(self, fileName, keys):
+    def __init__(self, fileName, keys, checkSumKey):
         self.fileName = fileName
         self.keys = keys
+        self.checkSumKey = checkSumKey
 
 def storeFile(fileName):
     #initializes a list of keys to be stored in the index
@@ -47,9 +48,9 @@ def storeFile(fileName):
     checksum = encode.encode(data)
     key = CHORD.hash(checksum)
     stub = CON.initializeClientConnection('127.0.0.1')
-    keys.append(stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(checksum))).status)
+    checkSumKey = stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(checksum))).status
     #adds filename and list of keys to file index
-    fileIndex.append(indexEntry(fileName, keys))
+    fileIndex.append(indexEntry(fileName, keys, checkSumKey))
 
 def retrieveFile(fileName):
     #creates a data bucket for the data retrieved from the network
@@ -61,21 +62,20 @@ def retrieveFile(fileName):
         if a.fileName == fileName:
             blocks = [bytearray(DISK.blockSize)] * len(a.keys)
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
-            for i in range(len(a.keys)):
+            for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
-                if i == len(a.keys) - 1:
-                    checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
-                else:
-                    try:
-                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i])).data)
-                        data += blocks[i]
-                    except:
-                        if missingBlock > -1:
-                            return bytearray()
-                        else:
-                            missingBlock = i
+                try:
+                    blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i])).data)
+                    data += blocks[i]
+                except:
+                    if missingBlock > -1:
+                        return bytearray()
+                    else:
+                        missingBlock = i
         if missingBlock > -1:
             print("Recovering missing block number " + str(missingBlock))
+            stub = CON.initializeClientConnection('127.0.0.1')
+            checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.checkSumKey)).data)
             time.sleep(2)
             blocks[missingBlock] = encode.decode(data, checksum)
             data2 = bytearray()

@@ -77,7 +77,6 @@ class Server(REMOTE.SecureMessagingServicer):
 
 def initializeClientConnection(server_ip):
     #Creates a GRPC stub for client communication
-    print("Initializing client connection to " + server_ip)
     channel = grpc.insecure_channel(server_ip + ':50050')
     stub = REMOTE.SecureMessagingStub(channel)
     return stub
