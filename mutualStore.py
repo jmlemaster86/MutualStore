@@ -58,8 +58,8 @@ def retrieveFile(fileName):
     missingBlock = -1
     #searches the fileIndex for the filename
     for a in fileIndex:
-        blocks = [bytearray(DISK.blockSize)] * len(a.keys)
         if a.fileName == fileName:
+            blocks = [bytearray(DISK.blockSize)] * len(a.keys)
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
             for i in range(len(a.keys)):
                 stub = CON.initializeClientConnection('127.0.0.1')
@@ -67,20 +67,21 @@ def retrieveFile(fileName):
                     checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
                 else:
                     try:
-                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i]), timeout=100).data)
+                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i])).data)
                         data += blocks[i]
                     except:
                         if missingBlock > -1:
                             return bytearray()
                         else:
                             missingBlock = i
-    if missingBlock > -1:
-        print("Recovering missing block number " + str(missingBlock))
-        blocks[missingBlock] = encode.decode(data, checksum)
-        data2 = bytearray()
-        for a in blocks:
-            data2 += a
-        return data2
+        if missingBlock > -1:
+            print("Recovering missing block number " + str(missingBlock))
+            time.sleep(2)
+            blocks[missingBlock] = encode.decode(data, checksum)
+            data2 = bytearray()
+            for a in blocks:
+                data2 += a
+            return data2
     return data
 
 def deleteFile(fileName):
