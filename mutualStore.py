@@ -113,7 +113,7 @@ if __name__ == "__main__":
             if(sys.argv[1] == 'store'):
                 if(socket.gethostname() == "client1"):
                     storeFile(sys.argv[2])
-                    time.sleep(1)
+                    time.sleep(.5)
                     print(retrieveFile(sys.argv[2]).decode('utf-8'))
             if(sys.argv[1] == 'load'):
                 retrieveFile(sys.argv[2])

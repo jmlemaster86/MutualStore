@@ -44,6 +44,8 @@ class Server(REMOTE.SecureMessagingServicer):
         #Checks if key is in range of any local virtual nodes
         block = self.chord.inRange(request.key)[0]
         if block > -1:
+            if(socket.gethostname() == 'client2'):
+                time.sleep(15)
             #If the node responsible for the key is on this system, return the data stored in that nodes block
             print("Retrieving block")
             time.sleep(.5)
