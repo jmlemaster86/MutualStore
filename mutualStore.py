@@ -65,8 +65,8 @@ def retrieveFile(fileName):
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
             for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
-                blocks[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.keys[i])).data)
-                data += blocks[i]
+                blocks[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
+                data += blocks[bc]
                 bc += 1
         if missingBlock > -1:
             print("Recovering missing block number " + str(missingBlock))
