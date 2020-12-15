@@ -65,8 +65,9 @@ def retrieveFile(fileName):
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
             for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
-                blocks[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
-                data += blocks[bc]
+                if bc != 1:
+                    blocks[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
+                    data += blocks[bc]
                 bc += 1
         if missingBlock > -1:
             print("Recovering missing block number " + str(missingBlock))
@@ -96,15 +97,16 @@ if __name__ == "__main__":
     #forks the client and server runtimes
     pid = os.fork()
     if(pid == 0):
-        time.sleep(2)
+        time.sleep(1)
         #discovers peers
         CON.createConnections()
-        time.sleep(3)
+        time.sleep(2)
         #if the user uses the store or load options determines the behaviour of the program
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
                 if(socket.gethostname() == "client1"):
                     storeFile(sys.argv[2])
+                    time.sleep(1)
                     print(retrieveFile(sys.argv[2]).decode('utf-8'))
             if(sys.argv[1] == 'load'):
                 retrieveFile(sys.argv[2])
