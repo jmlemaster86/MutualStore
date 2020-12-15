@@ -55,17 +55,34 @@ def retrieveFile(fileName):
     #creates a data bucket for the data retrieved from the network
     data = bytearray()
     checksum = bytearray(DISK.blockSize)
+    missingBlock = -1
     #searches the fileIndex for the filename
     for a in fileIndex:
+        blocks = [bytearray(DISK.blockSize)] * len(a.keys)
         if a.fileName == fileName:
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
             for i in range(len(a.keys)):
                 stub = CON.initializeClientConnection('127.0.0.1')
                 if i == len(a.keys) - 1:
                     checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
-                elif i != 2:
-                    data += bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i)).data)
-    return encode.decode(data, checksum, 2)
+                else:
+                    try:
+                        blocks[i] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i), timeout=3).data)
+                        data += blocks[i]
+                    except:
+                        if missingBlock > -1:
+                            return None
+                        else:
+                            missingBlock = i
+    if missingBlock > -1:
+        print("Recovering missing block number " + str(missingBlock))
+        blocks[missingBlock] = encode.decode(data, checksum)
+        data2 = bytearray()
+        for a in blocks:
+            data2 += a
+        return data2
+    else:
+        return data
 
 def deleteFile(fileName):
     #iterates over all files in the index to find the filename
