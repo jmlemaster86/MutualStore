@@ -22,7 +22,7 @@ class Server(REMOTE.SecureMessagingServicer):
         #If the node responsible is muted, the key is updated to successor of that node and the process is started over 
         if testVal[2]:
             stub = initializeClientConnection("127.0.0.1")
-            return stub.StoreBlock(MESSAGE.StoreReq(key = testVal[1], data = request.data, name = request.name))
+            return stub.StoreBlock(MESSAGE.StoreReq(key = testVal[1], data = request.data))
         #If the node responsible is not muted then store data to the block specified
         if block > -1:
             print("Storing data with key: " + str(request.key) + " in block: " + str(block))
@@ -35,7 +35,7 @@ class Server(REMOTE.SecureMessagingServicer):
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding storage request with key: " + str(request.key) + " to " + str(nextServer))
-            return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data, name = request.name))
+            return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
         return MESSAGE.Confirmation(status = -1)
 
     def RetrieveBlock(self, request, context):
@@ -100,4 +100,4 @@ def createConnections():
         if(socket.gethostname() != name):
             neighbor = socket.gethostbyname(name)
             stub = initializeClientConnection(neighbor)
-            stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum, name = ""))
+            stub.JoinNode(MESSAGE.JoinReq(ip = CHORD.ip, numBlocks = DISK.blockNum))
