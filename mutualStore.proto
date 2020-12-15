@@ -7,6 +7,8 @@ service SecureMessaging{
     rpc RetrieveBlock (RetrieveReq) returns (BlockMsg) {}
 
     rpc JoinNode (JoinReq) returns (Confirmation) {}
+
+    rpc DeleteBlock (DeleteReq) returns (Confirmation) {}
 }
 
 message StoreReq{
@@ -16,12 +18,15 @@ message StoreReq{
 
 message RetrieveReq{
     int32 key = 1;
-    string name = 2;
 }
 
 message JoinReq{
     string ip = 1;
     int32 numBlocks = 2;
+}
+
+message DeleteReq{
+    int32 key = 1;
 }
 
 message BlockMsg{
