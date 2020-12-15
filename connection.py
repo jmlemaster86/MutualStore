@@ -51,7 +51,7 @@ class Server(REMOTE.SecureMessagingServicer):
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding load request")
-            return stub.RetrieveBlock(MESSAGE.RetrieveReq(request.key))
+            return stub.RetrieveBlock(MESSAGE.RetrieveReq(key = request.key))
         return MESSAGE.BlockMsg(data = None)
 
     def DeleteBlock(self, request, context):
