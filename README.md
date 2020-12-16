@@ -15,16 +15,16 @@
 * Failure masking(Distributed Systems textbook pg. 431)
 
 ## Efficient Lookup of Peers
-Problem: MutualStore being a peer-to-peer system needs a decentralized method of looking up peers that doesn’t require each peer to know all others nor requires a look up time that is linear with respect to the number of peers i.e O(n)
-Solution: MutualStore uses the Chord algorithm to efficiently lookup peers, this allows O(log n) look up time and each peer only needs to know about log n peers directly
+* Problem: MutualStore being a peer-to-peer system needs a decentralized method of looking up peers that doesn’t require each peer to know all others nor requires a look up time that is linear with respect to the number of peers i.e O(n)
+* Solution: MutualStore uses the Chord algorithm to efficiently lookup peers, this allows O(log n) look up time and each peer only needs to know about log n peers directly
 
 ## Uniform Distribution of Load
-Problem: Gaps in the distributed hash table can make a peer responsible for a larger number of keys than other peers, and the distributed hash table does not consider the capacity of any of the peers.
-Solution: MutualStore uses virtual nodes, each peer can have many virtual nodes and each virtual node is responsible for one block of local storage.
+* Problem: Gaps in the distributed hash table can make a peer responsible for a larger number of keys than other peers, and the distributed hash table does not consider the capacity of any of the peers.
+* Solution: MutualStore uses virtual nodes, each peer can have many virtual nodes and each virtual node is responsible for one block of local storage.
 
 ## Failure Masking
-Problem: Peers in this system may be offline at any point, so Mutual store needs a way of recovering data even if some peers are down.
-Solution: MutualStore uses a RAID5 like system to create a checksum block, so a single block failure can be recovered from.  
+* Problem: Peers in this system may be offline at any point, so Mutual store needs a way of recovering data even if some peers are down.
+* Solution: MutualStore uses a RAID5 like system to create a checksum block, so a single block failure can be recovered from.  
 
 ## Testing
 * First tested local storage abilities by creating a virtual disk and saving a file to it and retrieving that file and confirming that the file was unchanged
