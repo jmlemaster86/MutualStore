@@ -89,9 +89,7 @@ def deleteFile(fileName):
                 stub.DeleteBlock(CON.MESSAGE.DeleteReq(key = i))
 
 if __name__ == "__main__":
-    #if no virtual disk is found, creates it
-    if(not os.path.exists("disk.bin")):
-        DISK.fdisk()
+    DISK.fdisk()
     #forks the client and server runtimes
     pid = os.fork()
     if(pid == 0):
