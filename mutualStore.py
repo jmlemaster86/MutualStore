@@ -46,8 +46,6 @@ def storeFile(fileName):
         stub = CON.initializeClientConnection('127.0.0.1')
         #appends the key returned to the list of keys for the file index
         keys.append(stub.StoreBlock(CON.MESSAGE.StoreReq(key = key, data = bytes(block))).status)
-    print(str(numBlocks) + " stored.")
-    time.sleep(2)
     #Creates checksum block and stores it on the network
     checksum = encode.encode(data)
     key = CHORD.hash(checksum)
@@ -69,10 +67,12 @@ def retrieveFile(fileName):
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
             for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
-                data += bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i),timeout = 10).data)
+                if bc != 16:
+                    block[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i),timeout = 10).data)
+                    data += block[bc]
+                else:
+                    missingBlock = 16
                 bc += 1
-
-            print(str(bc) + " blocks retrieved.")
             time.sleep(2)
         if missingBlock > -1:
             print("Recovering missing block number " + str(missingBlock))
