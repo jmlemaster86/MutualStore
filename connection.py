@@ -26,7 +26,7 @@ class Server(REMOTE.SecureMessagingServicer):
         #If the node responsible is not muted then store data to the block specified
         if block > -1:
             print("Storing data with key: " + str(request.key) + " in block: " + str(block))
-            time.sleep(.5)
+            time.sleep(.1)
             DISK.saveBlock(block, request.data)
             self.chord.mute(request.key)
             #Returns the key used in case it had to change it at some point due to muted nodes
@@ -36,7 +36,7 @@ class Server(REMOTE.SecureMessagingServicer):
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding storage request with key: " + str(request.key) + " to " + str(nextServer))
-            time.sleep(.5)
+            time.sleep(.1)
             return stub.StoreBlock(MESSAGE.StoreReq(key = request.key, data = request.data))
         return MESSAGE.Confirmation(status = -1)
 
@@ -46,7 +46,7 @@ class Server(REMOTE.SecureMessagingServicer):
         if block > -1:
             #If the node responsible for the key is on this system, return the data stored in that nodes block
             print("Retrieving block")
-            time.sleep(.5)
+            time.sleep(.1)
             diskData = DISK.loadBlock(block)
             return MESSAGE.BlockMsg(data = diskData)
         else:
@@ -54,7 +54,7 @@ class Server(REMOTE.SecureMessagingServicer):
             nextServer = self.chord.mostPrev(request.key)
             stub = initializeClientConnection(nextServer)
             print("Forwarding load request")
-            time.sleep(.5)
+            time.sleep(.1)
             return stub.RetrieveBlock(MESSAGE.RetrieveReq(key = request.key))
         return MESSAGE.BlockMsg(data = None)
 
