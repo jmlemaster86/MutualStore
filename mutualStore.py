@@ -65,17 +65,17 @@ def retrieveFile(fileName):
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
             for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
-                if bc != 2:
+                if bc != 12:
                     blocks[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i),timeout = 10).data)
                     data += blocks[bc]
                 else:
-                    missingBlock = 2
+                    missingBlock = 12
                 bc += 1
         if missingBlock > -1:
             print("Recovering missing block number " + str(missingBlock))
             stub = CON.initializeClientConnection('127.0.0.1')
             checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.checkSumKey)).data)
-            time.sleep(.1)
+            time.sleep(.3)
             blocks[missingBlock] = encode.decode(data, checksum)
             data2 = bytearray()
             for a in blocks:
