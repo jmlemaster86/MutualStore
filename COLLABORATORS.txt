@@ -1,0 +1,8 @@
+https://oudalab.github.io/cs5113fa20/papers/stoica2001chord.pdf  #for chord algorithm help
+https://oudalab.github.io/cs5113fa20/papers/decandia2007dynamo.pdf #for inspiration for virtual nodes
+http://web.eecs.utk.edu/~jplank/plank/papers/CS-96-332.pdf  #for help with encoding checksums
+https://www.geeksforgeeks.org/constructors-in-python/  #help with python constructors
+https://www.w3resource.com/python/python-bytes.php  #help with python bytes and bytearray datatypes
+https://stackoverflow.com/questions/8710456/reading-a-binary-file-with-python #help with openning and editting files in python
+https://stackoverflow.com/questions/43869397/how-do-you-set-a-timeout-in-pythons-grpc-library  #help with setting GRPC timeouts
+https://developers.google.com/protocol-buffers/docs/pythontutorial  #Protobuf syntax help
