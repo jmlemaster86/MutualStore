@@ -67,24 +67,29 @@ def retrieveFile(fileName):
             #if the filename is found in the index, iterate over the keys in the index to retrieve each block of data
             for i in a.keys:
                 stub = CON.initializeClientConnection('127.0.0.1')
+                #This causes block 4 to fail to test the ability to recover
                 if bc != 4:
                     blocks[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i),timeout = 10).data)
                     data += blocks[bc]
                 else:
                     missingBlock = 4
                 bc += 1
-            time.sleep(2)
+            time.sleep(.5)
+        #if there is a missing block
         if missingBlock > -1:
             print("Recovering missing block number " + str(missingBlock))
             time.sleep(2)
             stub = CON.initializeClientConnection('127.0.0.1')
+            #get the checksum from network storage
             checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.checkSumKey)).data)
-            time.sleep(.3)
+            #decode the missing block using the other blocks and the checksum
             blocks[missingBlock] = encode.decode(data, checksum)
+            #build the file with the missing block in the correct position
             data2 = bytearray()
             for a in blocks:
                 data2 += a
             return data2
+    #if no missing blocks return data, else return data2
     return data
 
 def deleteFile(fileName):
@@ -108,6 +113,7 @@ if __name__ == "__main__":
         #if the user uses the store or load options determines the behaviour of the program
         if(len(sys.argv) > 1):
             if(sys.argv[1] == 'store'):
+                #For testing client1 stores a file and then retrieves it
                 if(socket.gethostname() == "client1"):
                     storeFile(sys.argv[2])
                     time.sleep(.5)
@@ -115,4 +121,5 @@ if __name__ == "__main__":
             if(sys.argv[1] == 'load'):
                 retrieveFile(sys.argv[2])
     else:
+        #Start server
         CON.initializeServerConnection()
