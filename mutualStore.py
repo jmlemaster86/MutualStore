@@ -78,7 +78,7 @@ def retrieveFile(fileName):
         #if there is a missing block
         if missingBlock > -1:
             print("Recovering missing block number " + str(missingBlock))
-            time.sleep(3)
+            time.sleep(6)
             stub = CON.initializeClientConnection('127.0.0.1')
             #get the checksum from network storage
             checksum = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = a.checkSumKey)).data)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
                 #For testing client1 stores a file and then retrieves it
                 if(socket.gethostname() == "client1"):
                     storeFile(sys.argv[2])
-                    time.sleep(.5)
+                    time.sleep(5)
                     print(retrieveFile(sys.argv[2]).decode('utf-8'))
             if(sys.argv[1] == 'load'):
                 retrieveFile(sys.argv[2])
