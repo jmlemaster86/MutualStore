@@ -40,9 +40,6 @@ def storeFile(fileName):
                 block[i] = data[a]
             else:
                 break
-        if n == numBlocks - 1:
-            print(block.decode('utf-8'))
-            time.sleep(550)
         #creates a hash of the block to serve as a key to determine where it should be stored
         key = CHORD.hash(block)
         #connects to local server to start the process
