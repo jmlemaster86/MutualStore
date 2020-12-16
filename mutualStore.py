@@ -28,21 +28,21 @@ def storeFile(fileName):
         while byte:
            data.append(byte[0])
            byte = file.read(1)
-
-    print(data.decode('utf-8'))
-    time.sleep(500)
     #initializes a bytearray to store a blocks worth of data
-    block = bytearray(DISK.blockSize)
     a = 0
     #breaks the data into blocks and sends them to the server to be stored
     numBlocks = encode.round(float(len(data)) / float(DISK.blockSize))
     for n in range(numBlocks):
+        block = bytearray(DISK.blockSize)
         for i in range(DISK.blockSize):
             a = n * DISK.blockSize + i
             if a < len(data):
                 block[i] = data[a]
             else:
                 break
+        if n == numBlocks - 1:
+            print(block.decode('utf-8'))
+            time.sleep(550)
         #creates a hash of the block to serve as a key to determine where it should be stored
         key = CHORD.hash(block)
         #connects to local server to start the process
