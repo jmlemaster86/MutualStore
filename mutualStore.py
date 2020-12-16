@@ -28,11 +28,14 @@ def storeFile(fileName):
         while byte:
            data.append(byte[0])
            byte = file.read(1)
+
+    print(data.decode('utf-8'))
+    time.sleep(500)
     #initializes a bytearray to store a blocks worth of data
     block = bytearray(DISK.blockSize)
     a = 0
     #breaks the data into blocks and sends them to the server to be stored
-    numBlocks = encode.round(float(len(data)) / float(DISK.blockSize) )
+    numBlocks = encode.round(float(len(data)) / float(DISK.blockSize))
     for n in range(numBlocks):
         for i in range(DISK.blockSize):
             a = n * DISK.blockSize + i
