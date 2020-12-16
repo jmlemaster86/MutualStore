@@ -67,7 +67,7 @@ def retrieveFile(fileName):
                 stub = CON.initializeClientConnection('127.0.0.1')
                 if bc != 12:
                     blocks[bc] = bytearray(stub.RetrieveBlock(CON.MESSAGE.RetrieveReq(key = i),timeout = 10).data)
-                    data += blocks[bc]
+                    data += bytes(blocks[bc])
                 else:
                     missingBlock = 12
                 bc += 1
