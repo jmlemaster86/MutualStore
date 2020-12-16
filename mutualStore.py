@@ -32,10 +32,11 @@ def storeFile(fileName):
     block = bytearray(DISK.blockSize)
     a = 0
     #breaks the data into blocks and sends them to the server to be stored
-    while(a < len(data)):
+    numBlocks = encode.round(float(len(data)) / float(DISK.blockSize) )
+    for n in range numBlocks:
         for i in range(DISK.blockSize):
+            a = n * DISK.blockSize + i
             block[i] = data[a]
-            a += 1
             if a >= len(data):
                 break
         #creates a hash of the block to serve as a key to determine where it should be stored
