@@ -1,4 +1,4 @@
-blockSize = 256
+blockSize = 1024
 blockNum = 50
 diskSize = blockSize * blockNum
 
